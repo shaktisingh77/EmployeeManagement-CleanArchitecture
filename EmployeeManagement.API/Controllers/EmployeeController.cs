@@ -5,10 +5,12 @@ using EmployeeManagement.Application.Features.Employees.Commands.UpdateEmployee;
 using EmployeeManagement.Application.Features.Employees.Queries.GetAllEmployees;
 using EmployeeManagement.Application.Features.Employees.Queries.GetEmployeeById;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EmployeeManagement.API.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class EmployeeController : ControllerBase
@@ -32,7 +34,7 @@ namespace EmployeeManagement.API.Controllers
             var employee = await _mediator.Send(
                 new GetEmployeeByIdQuery
                 {
-                    Id = id
+                    EmployeeId = id
                 });
 
             if (employee == null)
@@ -51,22 +53,18 @@ namespace EmployeeManagement.API.Controllers
         public async Task<IActionResult> UpdateEmployee(Guid id, UpdateEmployeeCommand command)
         {
             command.EmployeeId = id;
-            var updated = await _mediator.Send(command);
-            if (!updated)
-                return NotFound();
+            await _mediator.Send(command);
+         
             return NoContent();
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteEmployee(Guid id)
         {
-            var deleted = await _mediator.Send(new DeleteEmployeeCommand
+            await _mediator.Send(new DeleteEmployeeCommand
                 {
                     EmployeeId = id
                 });
-
-            if (!deleted)
-                return NotFound();
 
             return NoContent();
         }

@@ -1,11 +1,12 @@
 ﻿using AutoMapper;
-using EmployeeManagement.Application.DTOs;
+using EmployeeManagement.Application.Exceptions;
 using EmployeeManagement.Application.Interfaces;
+using EmployeeManagent.Domain.Entities;
 using MediatR;
 
 namespace EmployeeManagement.Application.Features.Employees.Commands.UpdateEmployee;
 
-public class UpdateEmployeeCommandHandler : IRequestHandler<UpdateEmployeeCommand, bool>
+public class UpdateEmployeeCommandHandler : IRequestHandler<UpdateEmployeeCommand>
 {
     private readonly IEmployeeRepository _employeeRepository;
     private readonly IMapper _mapper;
@@ -19,14 +20,13 @@ public class UpdateEmployeeCommandHandler : IRequestHandler<UpdateEmployeeComman
         _unitOfWork = unitOfWork;
     }
 
-    public async Task<bool> Handle(UpdateEmployeeCommand request,CancellationToken cancellationToken)
+    public async Task Handle(UpdateEmployeeCommand request,CancellationToken cancellationToken)
     {
         var employee = await _employeeRepository.GetByIdAsync(request.EmployeeId,cancellationToken);
 
-        if (employee is null)
+        if (employee == null)
         {
-            throw new Exception(
-                "Employee not found");
+            throw new NotFoundException(nameof(Employee),request.EmployeeId);
         }
 
         employee.EmployeeName = request.EmployeeName;
@@ -36,8 +36,6 @@ public class UpdateEmployeeCommandHandler : IRequestHandler<UpdateEmployeeComman
 
         _employeeRepository.Update(employee);
 
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
-
-        return true;
+        await _unitOfWork.SaveChangesAsync(cancellationToken);        
     }
 }

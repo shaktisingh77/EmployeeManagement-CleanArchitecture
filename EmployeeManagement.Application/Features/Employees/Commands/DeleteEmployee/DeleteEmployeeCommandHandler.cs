@@ -1,9 +1,11 @@
-﻿using EmployeeManagement.Application.Interfaces;
+﻿using EmployeeManagement.Application.Exceptions;
+using EmployeeManagement.Application.Interfaces;
+using EmployeeManagent.Domain.Entities;
 using MediatR;
 
 namespace EmployeeManagement.Application.Features.Employees.Commands.DeleteEmployee;
 
-public class DeleteEmployeeCommandHandler : IRequestHandler<DeleteEmployeeCommand, bool>
+public class DeleteEmployeeCommandHandler : IRequestHandler<DeleteEmployeeCommand>
 {
     private readonly IEmployeeRepository _employeeRepository;
     private readonly IUnitOfWork _unitOfWork;
@@ -14,20 +16,17 @@ public class DeleteEmployeeCommandHandler : IRequestHandler<DeleteEmployeeComman
         _unitOfWork = unitOfWork;
     }
 
-    public async Task<bool> Handle(DeleteEmployeeCommand request, CancellationToken cancellationToken)
+    public async Task Handle(DeleteEmployeeCommand request, CancellationToken cancellationToken)
     {
         var employee = await _employeeRepository.GetByIdAsync(request.EmployeeId,cancellationToken);
 
-        if (employee is null)
+        if (employee == null)
         {
-            throw new Exception(
-                "Employee not found");
+            throw new NotFoundException(nameof(Employee),request.EmployeeId);
         }
 
         _employeeRepository.Delete(employee);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
-
-        return true;
     }
 }

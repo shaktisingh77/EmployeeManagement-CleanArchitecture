@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
 using EmployeeManagement.Application.DTOs;
+using EmployeeManagement.Application.Exceptions;
+using EmployeeManagent.Domain.Entities;
 using MediatR;
 
 namespace EmployeeManagement.Application.Features.Employees.Queries.GetEmployeeById;
@@ -17,11 +19,11 @@ public class GetEmployeeByIdQueryHandler : IRequestHandler<GetEmployeeByIdQuery,
 
     public async Task<EmployeeDto?> Handle(GetEmployeeByIdQuery request, CancellationToken cancellationToken)
     {
-        var employee = await _employeeRepository.GetByIdAsync(request.Id,cancellationToken);
+        var employee = await _employeeRepository.GetByIdAsync(request.EmployeeId,cancellationToken);
 
-        if (employee is null)
+        if (employee == null)
         {
-            throw new Exception("Employee not found");
+            throw new NotFoundException(nameof(Employee),request.EmployeeId);
         }
 
         return _mapper.Map<EmployeeDto>(employee);

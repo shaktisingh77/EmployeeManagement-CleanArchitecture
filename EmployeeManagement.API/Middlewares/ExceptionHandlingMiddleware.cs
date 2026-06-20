@@ -1,11 +1,13 @@
-﻿namespace EmployeeManagement.API.Middleware;
+﻿using EmployeeManagement.API.Models;
+using EmployeeManagement.Application.Exceptions;
+using FluentValidation;
+
+namespace EmployeeManagement.API.Middleware;
 public class ExceptionHandlingMiddleware
 {
     private readonly RequestDelegate _next;
     private readonly ILogger<ExceptionHandlingMiddleware> _logger;
-    public ExceptionHandlingMiddleware(
-    RequestDelegate next,
-    ILogger<ExceptionHandlingMiddleware> logger)
+    public ExceptionHandlingMiddleware(RequestDelegate next,ILogger<ExceptionHandlingMiddleware> logger)
     {
         _next = next;
         _logger = logger;
@@ -16,20 +18,53 @@ public class ExceptionHandlingMiddleware
         {
             await _next(context);
         }
-        catch (Exception ex)
+        catch (NotFoundException ex)
         {
-            _logger.LogError(
-                ex,
-                "Unhandled exception occurred");
-
-            context.Response.StatusCode = 500;
-
-            context.Response.ContentType = "application/json";
+            context.Response.StatusCode = StatusCodes.Status404NotFound;
 
             await context.Response.WriteAsJsonAsync(
-                new
+                new ApiExceptionResponse
                 {
-                    Message = "An unexpected error occurred"
+                    StatusCode = StatusCodes.Status404NotFound,
+                    Message = ex.Message
+                });
+        }
+        catch (BusinessRuleException ex)
+        {
+            context.Response.StatusCode = StatusCodes.Status400BadRequest;
+
+            await context.Response.WriteAsJsonAsync(
+                new ApiExceptionResponse
+                {
+                    StatusCode = StatusCodes.Status400BadRequest,
+                    Message = ex.Message
+                });
+        }
+        catch (ValidationException ex)
+        {
+            context.Response.StatusCode =
+                StatusCodes.Status400BadRequest;
+
+            await context.Response.WriteAsJsonAsync(
+                new ApiValidationExceptionResponse
+                {
+                    StatusCode = StatusCodes.Status400BadRequest,
+
+                    Errors = ex.Errors
+                                .Select(x => x.ErrorMessage)
+                                .Distinct()
+                                .ToList()
+                });
+        }
+        catch (Exception ex)
+        {
+            context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+
+            await context.Response.WriteAsJsonAsync(
+                new ApiExceptionResponse
+                {
+                    StatusCode = StatusCodes.Status500InternalServerError,
+                    Message = "An unexpected error occurred."
                 });
         }
     }

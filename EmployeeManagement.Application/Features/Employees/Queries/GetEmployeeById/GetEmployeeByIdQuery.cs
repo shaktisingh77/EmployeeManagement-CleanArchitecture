@@ -5,5 +5,5 @@ namespace EmployeeManagement.Application.Features.Employees.Queries.GetEmployeeB
 
 public class GetEmployeeByIdQuery : IRequest<EmployeeDto?>
 {
-    public Guid Id { get; set; }
+    public Guid EmployeeId { get; set; }
 }

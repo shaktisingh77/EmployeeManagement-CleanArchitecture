@@ -2,7 +2,7 @@
 
 namespace EmployeeManagement.Application.Features.Employees.Commands.UpdateEmployee;
 
-public class UpdateEmployeeCommand : IRequest<bool>
+public class UpdateEmployeeCommand : IRequest
 {
     public Guid EmployeeId { get; set; }
 
