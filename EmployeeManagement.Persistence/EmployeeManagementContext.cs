@@ -1,4 +1,5 @@
-﻿using EmployeeManagent.Domain.Entities;
+﻿using EmployeeManagement.Domain.Entities;
+using EmployeeManagent.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -8,10 +9,11 @@ namespace EmployeeManagement.Persistence
     {
         public EmployeeManagementContext(DbContextOptions options) : base(options) { }       
         public DbSet<Employee> Employees { get; set; }
+        public DbSet<User> Users { get; set; }
+        public DbSet<Role> Roles { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Employee>().ToTable("tblEmployee");
-            modelBuilder.Entity<Employee>().Property(x => x.Salary).HasPrecision(18, 2);
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(EmployeeManagementContext).Assembly);
         }
     }
 }

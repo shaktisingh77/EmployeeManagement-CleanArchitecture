@@ -1,5 +1,6 @@
 ﻿using EmployeeManagement.Application.Interfaces;
 using EmployeeManagement.Application.Interfaces.Authentication;
+using EmployeeManagement.Application.Interfaces.Repositories;
 using EmployeeManagement.Persistence.Authentication;
 using EmployeeManagement.Persistence.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -25,6 +26,8 @@ public static class InfrastructureServiceRegistration
         services.Configure<JwtSettings>(configuration.GetSection("JwtSettings"));
 
         services.AddScoped<IJwtTokenService,JwtTokenService>();
+
+        services.AddScoped<IUserRepository,UserRepository>();
 
         return services;
     }

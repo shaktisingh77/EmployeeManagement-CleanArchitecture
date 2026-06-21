@@ -18,14 +18,14 @@ namespace EmployeeManagement.Application.Features.Authentication.Commands.Login
 
         public async Task<LoginResponse> Handle(LoginCommand request,CancellationToken cancellationToken)
         {
-            var user = await _authenticationService.AuthenticateAsync(request.Email,request.Password);
+            var user = await _authenticationService.ValidateUserAsync(request.Email,request.Password);
 
             if (user == null)
             {
-                throw new UnauthorizedAccessException("Invalid email or password.");
+                throw new UnauthorizedAccessException();
             }
 
-            var token = _jwtTokenService.GenerateToken(user.UserId,user.Name,user.Email,user.Role);
+            var token = _jwtTokenService.GenerateToken(user.UserId,user.Name,user.Email,user.Roles);
 
             return new LoginResponse
             {

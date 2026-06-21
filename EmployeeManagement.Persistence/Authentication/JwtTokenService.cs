@@ -16,19 +16,22 @@ namespace EmployeeManagement.Persistence.Authentication
             _jwtSettings = jwtSettings.Value;
         }
 
-        public string GenerateToken(string userId, string name, string email, string role)
+        public string GenerateToken(Guid userId, string name, string email, List<string> roles)
         {
             //generate claims
             var claims = new List<Claim>
                 {
-                    new Claim(ClaimTypes.NameIdentifier, userId),
+                    new Claim(ClaimTypes.NameIdentifier, userId.ToString()),
 
                     new Claim(ClaimTypes.Name, name),
 
-                    new Claim(ClaimTypes.Email,email),
+                    new Claim(ClaimTypes.Email,email)
+            };
 
-                    new Claim(ClaimTypes.Role, role)
-                };
+            foreach (var item in roles)
+            {
+                claims.Add(new Claim(ClaimTypes.Role,item));
+            }
 
             //create secret key
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.SecretKey));

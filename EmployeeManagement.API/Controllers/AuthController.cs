@@ -16,8 +16,7 @@ namespace EmployeeManagement.API.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<ActionResult<LoginResponse>> Login(
-            LoginCommand command)
+        public async Task<ActionResult<LoginResponse>> Login(LoginCommand command)
         {
             var response = await _mediator.Send(command);
 

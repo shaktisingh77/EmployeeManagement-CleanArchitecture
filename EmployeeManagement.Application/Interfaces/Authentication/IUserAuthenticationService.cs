@@ -4,6 +4,6 @@ namespace EmployeeManagement.Application.Interfaces.Authentication
 {
     public interface IUserAuthenticationService
     {
-        Task<AuthenticatedUser?> AuthenticateAsync(string email,string password);
+        Task<AuthenticatedUser?> ValidateUserAsync(string email,string password);
     }
 }
