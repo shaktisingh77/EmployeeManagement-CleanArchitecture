@@ -1,5 +1,6 @@
 ﻿using EmployeeManagement.Application.Interfaces.Authentication;
 using EmployeeManagement.Application.Interfaces.Repositories;
+using EmployeeManagement.Application.Interfaces.Security;
 using EmployeeManagement.Application.Models;
 
 namespace EmployeeManagement.Persistence.Authentication
@@ -7,10 +8,12 @@ namespace EmployeeManagement.Persistence.Authentication
     public class UserAuthenticationService: IUserAuthenticationService
     {
         private readonly IUserRepository _userRepository;
+        private readonly IPasswordHasher _passwordHasher;
 
-        public UserAuthenticationService(IUserRepository userRepository)
+        public UserAuthenticationService(IUserRepository userRepository, IPasswordHasher passwordHasher)
         {
             _userRepository = userRepository;
+            _passwordHasher = passwordHasher;
         }        
 
         public async Task<AuthenticatedUser?> ValidateUserAsync(string email,string password)
@@ -19,10 +22,11 @@ namespace EmployeeManagement.Persistence.Authentication
 
             if (user == null)
                 return null;
-
-            // password hashing later
-            if (user.PasswordHash != password)
+                        
+            if (!_passwordHasher.VerifyPassword(password,user.PasswordHash))
+            {
                 return null;
+            }
 
             return new AuthenticatedUser
             {

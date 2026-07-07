@@ -1,4 +1,5 @@
-﻿using EmployeeManagement.Application.Interfaces.Authentication;
+﻿using EmployeeManagement.Application.Exceptions;
+using EmployeeManagement.Application.Interfaces.Authentication;
 using MediatR;
 
 namespace EmployeeManagement.Application.Features.Authentication.Commands.Login
@@ -22,7 +23,7 @@ namespace EmployeeManagement.Application.Features.Authentication.Commands.Login
 
             if (user == null)
             {
-                throw new UnauthorizedAccessException();
+                throw new UnauthorizedException();
             }
 
             var token = _jwtTokenService.GenerateToken(user.UserId,user.Name,user.Email,user.Roles);

@@ -22,7 +22,7 @@ namespace EmployeeManagement.API.Controllers
             _mediator = mediator;
         }
 
-        [Authorize(Roles = "Supervisor")]
+        [Authorize(Roles = "Admin")]
         [HttpGet]
         public async Task<IActionResult> GetAllEmployees()
         {

@@ -1,8 +1,10 @@
 ﻿using EmployeeManagement.Application.Interfaces;
 using EmployeeManagement.Application.Interfaces.Authentication;
 using EmployeeManagement.Application.Interfaces.Repositories;
+using EmployeeManagement.Application.Interfaces.Security;
 using EmployeeManagement.Persistence.Authentication;
 using EmployeeManagement.Persistence.Repositories;
+using EmployeeManagement.Persistence.Secuirty;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -28,6 +30,8 @@ public static class InfrastructureServiceRegistration
         services.AddScoped<IJwtTokenService,JwtTokenService>();
 
         services.AddScoped<IUserRepository,UserRepository>();
+
+        services.AddScoped<IPasswordHasher, BCryptPasswordHasher>();
 
         return services;
     }

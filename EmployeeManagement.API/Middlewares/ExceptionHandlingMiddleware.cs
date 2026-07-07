@@ -56,6 +56,34 @@ public class ExceptionHandlingMiddleware
                                 .ToList()
                 });
         }
+        catch (UnauthorizedException ex)
+        {
+            context.Response.StatusCode =
+                StatusCodes.Status401Unauthorized;
+
+            await context.Response.WriteAsJsonAsync(
+                new ApiExceptionResponse
+                {
+                    StatusCode =
+                        StatusCodes.Status401Unauthorized,
+
+                    Message = ex.Message
+                });
+        }
+        catch (ForbiddenException ex)
+        {
+            context.Response.StatusCode =
+                StatusCodes.Status403Forbidden;
+
+            await context.Response.WriteAsJsonAsync(
+                new ApiExceptionResponse
+                {
+                    StatusCode =
+                        StatusCodes.Status403Forbidden,
+
+                    Message = ex.Message
+                });
+        }
         catch (Exception ex)
         {
             context.Response.StatusCode = StatusCodes.Status500InternalServerError;
