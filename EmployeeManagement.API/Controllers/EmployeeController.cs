@@ -22,7 +22,8 @@ namespace EmployeeManagement.API.Controllers
             _mediator = mediator;
         }
 
-        [Authorize(Roles = "Admin")]
+        [Authorize(Policy = "CanViewEmployees")]
+        //[Authorize(Roles = "Admin")]
         [HttpGet]
         public async Task<IActionResult> GetAllEmployees()
         {
